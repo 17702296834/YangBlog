@@ -124,6 +124,16 @@ def delete_a(i):
     user = Article.get(Article.id == i)
     user.delete_instance()
 
+def create_blog():
+    obj = Blog(title='YangEver的博客')
+    obj.site = '前进前进..'
+    obj.about = '关于我'
+    obj.copyright = '©2017 prozhi.com 京ICP证030173号 京公网安备11000002000001号'
+    obj.theme = 'Black'
+    obj.save()
+
+# create_blog()
+
 # for i in range(1, 18):
 #     create_a(i)
 

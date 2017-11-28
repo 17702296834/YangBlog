@@ -23,14 +23,18 @@ application = tornado.web.Application([
     (r"/article/([\d]+).html", index.ArticleHandler),
     # 查询
     (r"/search", index.SearchHandler),
-    # # Admin
-    # (r"/admin", admin.LoginHandler),
-    # # 登录
-    # (r"/login", admin.LoginHandler),
+    # 查询
+    (r"/about", index.AboutHandler),
+    # Admin login
+    (r"/admin/login", admin.LoginHandler),
+    # 登录
+    (r"/admin/index", admin.IndexHandler),
     # # 登出
     # (r"/logout", admin.LogoutHandler),
     # # 上传
     # (r"/upload", index.UploadFileNginxHandle),
+    # 404
+    (r".*", index.NotfindHandler)
 ], **settings)
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 from tornado.web import RequestHandler
 import os
 import json
-from models.blog import Blog, Article
+from models.blog import Blog, Article, UserInfo
 from utils.pagination import Page
 
 
@@ -30,9 +30,9 @@ class IndexHandler(RequestHandler):
 
 
 class ArticleHandler(RequestHandler):
-    def get(self, article=None):
+    def get(self, article_id=None):
         try:
-            article_obj = Article.get(Article.id == article)
+            article_obj = Article.get(Article.id == article_id)
         except Exception as e:
             print(e)
             return self.render('index/404.html')
@@ -43,6 +43,11 @@ class ArticleHandler(RequestHandler):
                         'created_date': article_obj.created_date,
                         'article_type': article_obj.type_choices[article_obj.article_type-1][1]
                         }
+        try:
+            query = Article.update(read_count=Article.read_count + 1).where(Article.id == article_id)
+            query.execute()
+        except Exception as e:
+            print(e)
         self.render('index/article.html', article_data=article_data)
 
 
@@ -75,3 +80,22 @@ class SearchHandler(RequestHandler):
             page_html = page_obj.page_str(base_url="search?search={_kw}&".format(_kw=search_kw))
             self.render('index/search.html', search_list=search_list, page_html=page_html)
         self.redirect('/index')
+
+
+class AboutHandler(RequestHandler):
+    def get(self):
+        try:
+            blog_obj = Blog.get(Blog.id == 1)
+            user_obj = UserInfo.get(UserInfo.username == 'yang')
+            about_data = {'username': user_obj.username,
+                          'email': user_obj.email,
+                          'about': blog_obj.about}
+            return self.render('index/about.html', about_data=about_data)
+        except Exception as e:
+            print(e)
+            return self.render('index/404.html')
+
+
+class NotfindHandler(RequestHandler):
+    def get(self):
+        return self.render('index/404.html')

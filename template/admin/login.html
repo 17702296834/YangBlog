@@ -24,7 +24,7 @@
             <!--指定logo位置及图片-->
             <div class="navbar-header">
                 <a href="#" class="navbar-brand">
-                Ftp文件上传下载系统
+                YangBlog
                 </a>
             </div>
             <div class="collapse navbar-collapse" id="menu">
@@ -41,7 +41,7 @@
     <!--添加一个container 做body-->
 	<div class="container body">
         <!--标题栏-->
-        <h1 class="page-header">用户登录</h1>
+        <h1 class="page-header">登录管理</h1>
         <!--表单-->
         <form class="form-horizontal form-data">
             <!--错误提示行-->
@@ -115,14 +115,14 @@
 //            console.log(post_dict);
 //            ajax提交请求
             $.ajax({
-                url: '/login',
+                url: '/admin/login',
                 type: 'POST',
                 data: post_dict,
                 dataType: 'json',
                 success: function(arg){
 //                    判断返回值，做出响应动作
                     if(arg.status === 'true'){
-                        window.location.href = '/index';
+                        window.location.href = '/admin/index';
                     }else{
                         $('#error-msg').removeClass('hide').text(arg.message);
                     }

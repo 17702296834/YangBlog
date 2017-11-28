@@ -3,68 +3,87 @@ from tornado.web import RequestHandler
 import tornado.web
 import os
 import json
-#
-# class BaseHandler(RequestHandler):
-#     def get_current_user(self):
-#         return self.get_secure_cookie("username", None)
-#
-#
-# class LoginHandler(BaseHandler):
-#     def get(self):
-#         self.render('admin/login.html')
-#
-#     def post(self):
-#         ret = {'status': 'true', 'message': ''}
-#         username = self.get_argument("username", None)
-#         password = self.get_argument("password", None)
-#         # print(username, password)
-#         obj = User().select().where(User.username == username, User.password == password).first()
-#         if obj:
-#             self.set_secure_cookie("username", username)
-#         else:
-#             ret['status'] = 'false'
-#             ret['message'] = '用户名或密码错误'
-#         return self.write(json.dumps(ret))
-#
-#
-# class LogoutHandler(BaseHandler):
-#     @tornado.web.authenticated
-#     def get(self):
-#         self.clear_cookie("username")
-#         self.redirect("/login")
-#
-#
-#
-#
-# class IndexHandler(BaseHandler):
-#     @tornado.web.authenticated
-#     def get(self):
-#         file_list = []
-#         objs = Files.select()
-#         for obj in objs:
-#             file_list.append([obj.file_name, obj.md5, obj.size, obj.created_date])
-#         self.render('index/index.html', file_list=file_list, username=self.get_current_user())
-#
-#     def post(self):
-#         ret = {'status': 'true', 'message': '', 'data': ''}
-#         file_md5 = self.get_argument("file_md5", None)
-#         file_name = self.get_argument("file_name", None)
-#         if file_md5 and file_name:
-#             f_obj = Files().select().where(Files.md5 == file_md5).first()
-#             f_path = os.path.join(DOWNLOAD_DIR, file_name)
-#             if f_obj:
-#                 try:
-#                     Files.delete().where(Files.md5 == file_md5).execute()
-#                     os.remove(f_path)
-#                     ret['message'] = '删除成功'
-#                 except Exception as e:
-#                     print(e)
-#                     ret['status'] = 'false'
-#                     ret['message'] = '删除失败'
-#         else:
-#             ret['status'] = 'false'
-#             ret['message'] = '所删文件不存在'
-#         self.write(json.dumps(ret))
+from models.blog import Blog, Article, UserInfo
+from utils.pagination import Page
+
+class BaseHandler(RequestHandler):
+    def get_current_user(self):
+        return self.get_secure_cookie("username", None)
+
+
+class LoginHandler(BaseHandler):
+    def get(self):
+        self.render('admin/login.html')
+
+    def post(self):
+        ret = {'status': 'false', 'message': ''}
+        username = self.get_argument("username", None)
+        password = self.get_argument("password", None)
+        try:
+            user_obj = UserInfo.get(UserInfo.username == username, UserInfo.password == password)
+            if user_obj:
+                self.set_secure_cookie("username", username)
+                ret['status'] = 'true'
+            else:
+                ret['message'] = '用户名或密码错误'
+        except Exception as e:
+            print(e)
+            ret['message'] = '服务器开小差了'
+        return self.write(json.dumps(ret))
+
+
+class LogoutHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        self.clear_cookie("username")
+        self.redirect("/index")
+
+
+
+
+class IndexHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        current_page = self.get_argument("p", 1)
+        current_page = int(current_page)
+        data_count = Article.select().count()
+        page_obj = Page(current_page=current_page, data_count=data_count)
+        if current_page == 1:
+            articles = Article.select()[-page_obj.end:]
+        else:
+            articles = Article.select()[-page_obj.end:-page_obj.start]
+        at_list = []
+        for a in articles:
+            at_list.append({'id': a.id,
+                            'title': a.title,
+                            'read_count': a.read_count,
+                            'created_date': a.created_date,
+                            'article_type': a.type_choices[a.article_type - 1][1]
+                            })
+        at_list.reverse()
+        page_html = page_obj.page_str(base_url="/admin/index?")
+        self.render('admin/index.html', at_list=at_list, page_html=page_html)
+
+    # def post(self):
+    #     ret = {'status': 'true', 'message': '', 'data': ''}
+    #     file_md5 = self.get_argument("file_md5", None)
+    #     file_name = self.get_argument("file_name", None)
+    #     if file_md5 and file_name:
+    #         f_obj = Files().select().where(Files.md5 == file_md5).first()
+    #         f_path = os.path.join(DOWNLOAD_DIR, file_name)
+    #         if f_obj:
+    #             try:
+    #                 Files.delete().where(Files.md5 == file_md5).execute()
+    #                 os.remove(f_path)
+    #                 ret['message'] = '删除成功'
+    #             except Exception as e:
+    #                 print(e)
+    #                 ret['status'] = 'false'
+    #                 ret['message'] = '删除失败'
+    #     else:
+    #         ret['status'] = 'false'
+    #         ret['message'] = '所删文件不存在'
+    #     self.write(json.dumps(ret))
 #
 #
 # class UploadFileNginxHandle(BaseHandler):
