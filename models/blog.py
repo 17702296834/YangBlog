@@ -32,6 +32,10 @@ class Blog(BaseModel):
     update_date = DateTimeField(verbose_name='更新时间', default=datetime.datetime.now)
 
 
+class ArticleType(BaseModel):
+    article_type = CharField(verbose_name='文章标签', max_length=128)
+
+
 class Article(BaseModel):
     title = CharField(verbose_name='文章标题', max_length=128)
     summary = CharField(verbose_name='文章简介', max_length=255)
@@ -39,16 +43,16 @@ class Article(BaseModel):
     content = TextField(verbose_name='文章内容')
     created_date = DateTimeField(verbose_name='创建时间', default=datetime.datetime.now)
     update_date = DateTimeField(verbose_name='更新时间', default=datetime.datetime.now)
-    type_choices = [
-            (1, "Python"),
-            (2, "Linux"),
-            (3, "OpenStack"),
-            (4, "GoLang"),
-            (5, "资讯")
-        ]
-    article_type = IntegerField(choices=type_choices, default=None)
+    # article_type = IntegerField(choices=type_choices, default=None)
+    article_type = ForeignKeyField(ArticleType)
 
 
+
+
+
+
+
+##########################
 def create_tables():
     blog.connect()
     blog.create_tables([UserInfo, Blog, Article])
@@ -136,6 +140,27 @@ def create_blog():
 
 # create_blog()
 
+def create_table():
+    blog.connect()
+    blog.create_tables([Article, ArticleType])
+    blog.close()
+
+def create_at():
+    type_choices = [
+        (1, "Python"),
+        (2, "Linux"),
+        (3, "OpenStack"),
+        (4, "GoLang"),
+        (5, "资讯")
+    ]
+    for i in type_choices:
+        at = ArticleType(article_type=i[1])
+        at.save()
+
+#
+# create_table()
+# create_at()
+
 # for i in range(1, 60):
 #     create_a(i)
 
@@ -144,3 +169,9 @@ def create_blog():
 
 # obj = Article.type_choices
 # print(obj)
+
+# at = Article.get(id=2)
+# print(at.title)
+# print(at.article_type.article_type)
+# for a in ArticleType.select():
+#     print(a.article_type)

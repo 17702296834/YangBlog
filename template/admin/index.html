@@ -107,7 +107,7 @@
                   <span class="input-group-addon" id="type-addon">文章类型:</span>
                   <select class="form-control type" id="article-type">
                       {% for type in article_types %}
-                         <option value="{{ type[0] }}">{{ type[1] }}</option>
+                         <option value="{{ type['id'] }}">{{ type['article_type'] }}</option>
                       {% end %}
                   </select>
               </div>

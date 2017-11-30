@@ -3,7 +3,7 @@ from tornado.web import RequestHandler
 import tornado.web
 import datetime
 import json
-from models.blog import Blog, Article, UserInfo
+from models.blog import Blog, Article, UserInfo, ArticleType
 from utils.pagination import Page
 
 
@@ -47,7 +47,6 @@ class IndexHandler(BaseHandler):
         current_page = int(current_page)
         data_count = Article.select().count()
         page_obj = Page(current_page=current_page, data_count=data_count, per_page_count=15)
-        article_types = Article.type_choices
         if current_page == 1:
             articles = Article.select()[-page_obj.end:]
         else:
@@ -60,11 +59,15 @@ class IndexHandler(BaseHandler):
                             'summary': a.summary,
                             'content': a.content,
                             'created_date': a.created_date,
-                            'article_type_id': a.article_type,
-                            'article_type': a.type_choices[a.article_type - 1][1]
+                            'article_type_id': a.article_type_id,
+                            'article_type': a.article_type.article_type
                             })
         at_list.reverse()
         page_html = page_obj.page_str(base_url="/admin/index?")
+        article_types = []
+        article_type_objs = ArticleType.select()
+        for article_type_obj in article_type_objs:
+            article_types.append({'id': article_type_obj.id, 'article_type': article_type_obj.article_type})
         return self.render('admin/index.html', at_list=at_list, page_html=page_html, article_types=article_types)
 
     def post(self, *args, **kwargs):
@@ -79,7 +82,7 @@ class IndexHandler(BaseHandler):
             if action == 'post':
                 try:
                     article_obj = Article(title=title)
-                    article_obj.article_type = article_type
+                    article_obj.article_type_id = article_type
                     article_obj.summary = summary
                     article_obj.content = content
                     article_obj.save()
@@ -92,7 +95,7 @@ class IndexHandler(BaseHandler):
                 try:
                     article_obj = Article.get(Article.id == article_id)
                     article_obj.title = title
-                    article_obj.article_type = article_type
+                    article_obj.article_type_id = article_type
                     article_obj.summary = summary
                     article_obj.content = content
                     article_obj.update_date = datetime.datetime.now()
