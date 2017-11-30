@@ -1,10 +1,11 @@
 import tornado
 from tornado.web import RequestHandler
 import tornado.web
-import os
+import datetime
 import json
 from models.blog import Blog, Article, UserInfo
 from utils.pagination import Page
+
 
 class BaseHandler(RequestHandler):
     def get_current_user(self):
@@ -16,7 +17,7 @@ class LoginHandler(BaseHandler):
         self.render('admin/login.html')
 
     def post(self):
-        ret = {'status': 'false', 'message': ''}
+        ret = {'status': 'false', 'message': '', 'data': ''}
         username = self.get_argument("username", None)
         password = self.get_argument("password", None)
         try:
@@ -39,15 +40,14 @@ class LogoutHandler(BaseHandler):
         self.redirect("/index")
 
 
-
-
 class IndexHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         current_page = self.get_argument("p", 1)
         current_page = int(current_page)
         data_count = Article.select().count()
-        page_obj = Page(current_page=current_page, data_count=data_count)
+        page_obj = Page(current_page=current_page, data_count=data_count, per_page_count=15)
+        article_types = Article.type_choices
         if current_page == 1:
             articles = Article.select()[-page_obj.end:]
         else:
@@ -57,57 +57,68 @@ class IndexHandler(BaseHandler):
             at_list.append({'id': a.id,
                             'title': a.title,
                             'read_count': a.read_count,
+                            'summary': a.summary,
+                            'content': a.content,
                             'created_date': a.created_date,
+                            'article_type_id': a.article_type,
                             'article_type': a.type_choices[a.article_type - 1][1]
                             })
         at_list.reverse()
         page_html = page_obj.page_str(base_url="/admin/index?")
-        self.render('admin/index.html', at_list=at_list, page_html=page_html)
+        return self.render('admin/index.html', at_list=at_list, page_html=page_html, article_types=article_types)
 
-    # def post(self):
-    #     ret = {'status': 'true', 'message': '', 'data': ''}
-    #     file_md5 = self.get_argument("file_md5", None)
-    #     file_name = self.get_argument("file_name", None)
-    #     if file_md5 and file_name:
-    #         f_obj = Files().select().where(Files.md5 == file_md5).first()
-    #         f_path = os.path.join(DOWNLOAD_DIR, file_name)
-    #         if f_obj:
-    #             try:
-    #                 Files.delete().where(Files.md5 == file_md5).execute()
-    #                 os.remove(f_path)
-    #                 ret['message'] = '删除成功'
-    #             except Exception as e:
-    #                 print(e)
-    #                 ret['status'] = 'false'
-    #                 ret['message'] = '删除失败'
-    #     else:
-    #         ret['status'] = 'false'
-    #         ret['message'] = '所删文件不存在'
-    #     self.write(json.dumps(ret))
-#
-#
-# class UploadFileNginxHandle(BaseHandler):
-#     @tornado.web.authenticated
-#     def post(self, *args, **kwargs):
-#         ret = {'status': 'true', 'message': '', 'data': ''}
-#         file_name = self.get_argument("file_name", None)
-#         tmp_path = self.get_argument("tmp_path", None)
-#         md5 = self.get_argument("md5", None)
-#         size = self.get_argument("size", None)
-#         if file_name and tmp_path and md5 and size:
-#             file_path = os.path.join(DOWNLOAD_DIR, file_name)
-#             os.rename(tmp_path, file_path)
-#             file_obj = Files()
-#             file_obj.file_name = file_name
-#             file_obj.md5 = md5
-#             file_obj.path = tmp_path
-#             file_obj.size = size
-#             file_obj.save()
-#             ret['data'] = {'name': file_name, 'size': size, 'path': file_path, 'md5': md5}
-#         ret['status'] = 'false'
-#         self.write(json.dumps(ret))
-#
-#
+    def post(self, *args, **kwargs):
+        ret = {'status': 'false', 'message': '', 'data': ''}
+        article_id = self.get_argument('article_id', None)
+        title = self.get_argument('title', None)
+        article_type = self.get_argument('article_type', None)
+        summary = self.get_argument('summary', None)
+        content = self.get_argument('content', None)
+        action = self.get_argument('action', None)
+        if article_id and title and article_type and summary and content and action:
+            if action == 'post':
+                try:
+                    article_obj = Article(title=title)
+                    article_obj.article_type = article_type
+                    article_obj.summary = summary
+                    article_obj.content = content
+                    article_obj.save()
+                    ret['status'] = 'true'
+                    ret['message'] = '文章保存成功'
+                except Exception as e:
+                    print(e)
+                    ret['message'] = '文章保存失败'
+            elif action == 'patch':
+                try:
+                    article_obj = Article.get(Article.id == article_id)
+                    article_obj.title = title
+                    article_obj.article_type = article_type
+                    article_obj.summary = summary
+                    article_obj.content = content
+                    article_obj.update_date = datetime.datetime.now()
+                    article_obj.save()
+                    ret['status'] = 'true'
+                    ret['message'] = '文章修改成功'
+                except Exception as e:
+                    print(e)
+                    ret['message'] = '文章修改失败'
+
+            elif action == 'delete':
+                try:
+                    article_obj = Article.get(Article.id == article_id)
+                    article_obj.delete_instance()
+                    ret['status'] = 'true'
+                    ret['message'] = '文章删除成功'
+                except Exception as e:
+                    print(e)
+                    ret['message'] = '文章删除失败'
+            else:
+                ret['message'] = '请求非法'
+        else:
+            ret['message'] = '参数非法'
+        self.write(json.dumps(ret))
+
+
 # class AdminHandle(tornado.web.RequestHandler):
 #     def get(self):
 #         user_list = []
@@ -136,16 +147,3 @@ class IndexHandler(BaseHandler):
 #             ret['message'] = '用户名或者密码没有填写'
 #         return self.write(json.dumps(ret))
 #
-#     def delete(self, *args, **kwargs):
-#         ret = {'status': 'ture', 'message': '', 'data': ''}
-#         username = self.get_argument('username', None)
-#         if username:
-#             if User.delete().where(User.username == username).execute():
-#                 return self.write(json.dumps(ret))
-#             else:
-#                 ret['status'] = 'false'
-#                 ret['message'] = '删除失败'
-#         else:
-#             ret['status'] = 'false'
-#             ret['message'] = '没有用户'
-#         return self.write(json.dumps(ret))

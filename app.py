@@ -10,7 +10,7 @@ settings = {
     'static_path': 'static',
     'static_url_prefix': '/static/',
     'cookie_secret': '43809138f51b96f8ac24e79b3a2cb482',
-    'login_url': '/login',
+    'login_url': '/admin/login',
     #'xsrf_cookies': True,
     'debug': True,
     'autoreload': True,
@@ -29,8 +29,8 @@ application = tornado.web.Application([
     (r"/admin/login", admin.LoginHandler),
     # 登录
     (r"/admin/index", admin.IndexHandler),
-    # # 登出
-    # (r"/logout", admin.LogoutHandler),
+    # 登出
+    (r"/admin/logout", admin.LogoutHandler),
     # # 上传
     # (r"/upload", index.UploadFileNginxHandle),
     # 404

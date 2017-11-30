@@ -29,10 +29,11 @@
 			<h1 class="title">{{article_data['title']}}</h1>
 		</div>
 		<div class="post-meta">
-			{{article_data['article_type']}} | {{article_data['created_date']}} | {{article_data['read_count']}} views
+			{{article_data['article_type']}} | {{article_data['created_date']}} | {{article_data['read_count']}} views | 最后更新时间: {{article_data['update_date']}}
 		</div>
+		<br>
 		<div id="entry-single" class="entry">
-            {{article_data['content']}}
+            {% raw article_data['content'] %}
 			<p class="announce"><span><strong>声明:</strong></span> 除非注明，<a href="https://zww.me/">ZWWoOoOo</a>文章均为原创，转载请以链接形式标明本文地址<br>本文地址: <a href="https://zww.me/26725.zsay">https://zww.me/26725.zsay</a></p>					</div>
 				<div id="nav-below" class="cf">
 			<div class="nav-previous"><a href="https://zww.me/26720.zsay" rel="prev">更新到 WordPress 4.9，都 4.9 了，时间飞逝...</a> </div>

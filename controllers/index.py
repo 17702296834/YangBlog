@@ -1,6 +1,4 @@
 from tornado.web import RequestHandler
-import os
-import json
 from models.blog import Blog, Article, UserInfo
 from utils.pagination import Page
 
@@ -41,6 +39,7 @@ class ArticleHandler(RequestHandler):
                         'content': article_obj.content,
                         'read_count': article_obj.read_count,
                         'created_date': article_obj.created_date,
+                        'update_date': article_obj.update_date,
                         'article_type': article_obj.type_choices[article_obj.article_type-1][1]
                         }
         try:

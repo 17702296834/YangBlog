@@ -18,8 +18,8 @@ class UserInfo(BaseModel):
     nickname = CharField(max_length=50, verbose_name='昵称', default='')
     email = CharField(verbose_name='邮箱', unique=True, null=False)
     avatar = CharField(verbose_name='头像', null=True, default='')
-    c_time = DateTimeField(default=datetime.datetime.now)
-    u_time = DateTimeField(null=False)
+    created_date = DateTimeField(verbose_name='创建时间', default=datetime.datetime.now)
+    update_date = DateTimeField(verbose_name='更新时间', default=datetime.datetime.now)
 
 
 class Blog(BaseModel):
@@ -28,6 +28,8 @@ class Blog(BaseModel):
     theme = CharField(verbose_name='博客主题', max_length=32)
     about = CharField(verbose_name='关于我')
     copyright = CharField(verbose_name='底部信息')
+    created_date = DateTimeField(verbose_name='创建时间', default=datetime.datetime.now)
+    update_date = DateTimeField(verbose_name='更新时间', default=datetime.datetime.now)
 
 
 class Article(BaseModel):
@@ -36,6 +38,7 @@ class Article(BaseModel):
     read_count = IntegerField(default=0)
     content = TextField(verbose_name='文章内容')
     created_date = DateTimeField(verbose_name='创建时间', default=datetime.datetime.now)
+    update_date = DateTimeField(verbose_name='更新时间', default=datetime.datetime.now)
     type_choices = [
             (1, "Python"),
             (2, "Linux"),
@@ -66,7 +69,6 @@ def create_test():
     user = UserInfo(username='yang')
     user.password = '123456'
     user.email = 'inboxcvt@gmail.com'
-    user.u_time = datetime.datetime.now()
     user.save()
 
 
@@ -134,8 +136,11 @@ def create_blog():
 
 # create_blog()
 
-# for i in range(1, 18):
+# for i in range(1, 60):
 #     create_a(i)
 
 # print(Article.select().where(Article.title.contains('电')).count())
 # print(Article.select().where(Article.title ** ('%电%')).count())
+
+# obj = Article.type_choices
+# print(obj)
