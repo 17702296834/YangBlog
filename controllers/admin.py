@@ -5,6 +5,7 @@ import datetime
 import json
 from models.blog import Blog, Article, UserInfo, ArticleType
 from utils.pagination import Page
+from utils.log import Logger
 
 
 class BaseHandler(RequestHandler):
@@ -25,10 +26,11 @@ class LoginHandler(BaseHandler):
             if user_obj:
                 self.set_secure_cookie("username", username)
                 ret['status'] = 'true'
-            else:
-                ret['message'] = '用户名或密码错误'
+        except UserInfo.DoesNotExist as e:
+            Logger().log(e, True)
+            ret['message'] = '用户名或密码错误'
         except Exception as e:
-            print(e)
+            Logger().log(e, True)
             ret['message'] = '服务器开小差了'
         return self.write(json.dumps(ret))
 
@@ -47,28 +49,32 @@ class IndexHandler(BaseHandler):
         current_page = int(current_page)
         data_count = Article.select().count()
         page_obj = Page(current_page=current_page, data_count=data_count, per_page_count=15)
-        if current_page == 1:
-            articles = Article.select()[-page_obj.end:]
-        else:
-            articles = Article.select()[-page_obj.end:-page_obj.start]
-        at_list = []
-        for a in articles:
-            at_list.append({'id': a.id,
-                            'title': a.title,
-                            'read_count': a.read_count,
-                            'summary': a.summary,
-                            'content': a.content,
-                            'created_date': a.created_date,
-                            'article_type_id': a.article_type_id,
-                            'article_type': a.article_type.article_type
-                            })
-        at_list.reverse()
         page_html = page_obj.page_str(base_url="/admin/index?")
+        at_list = []
         article_types = []
-        article_type_objs = ArticleType.select()
-        for article_type_obj in article_type_objs:
-            article_types.append({'id': article_type_obj.id, 'article_type': article_type_obj.article_type})
-        return self.render('admin/index.html', at_list=at_list, page_html=page_html, article_types=article_types)
+        try:
+            if current_page == 1:
+                articles = Article.select()[-page_obj.end:]
+            else:
+                articles = Article.select()[-page_obj.end:-page_obj.start]
+            for a in articles:
+                at_list.append({'id': a.id,
+                                'title': a.title,
+                                'read_count': a.read_count,
+                                'summary': a.summary,
+                                'content': a.content,
+                                'created_date': a.created_date,
+                                'article_type_id': a.article_type_id,
+                                'article_type': a.article_type.article_type
+                                })
+            at_list.reverse()
+            article_type_objs = ArticleType.select()
+            for article_type_obj in article_type_objs:
+                article_types.append({'id': article_type_obj.id, 'article_type': article_type_obj.article_type})
+        except Exception as e:
+            Logger().log(e, True)
+            return self.render('index/500.html')
+        self.render('admin/index.html', at_list=at_list, page_html=page_html, article_types=article_types)
 
     def post(self, *args, **kwargs):
         ret = {'status': 'false', 'message': '', 'data': ''}
@@ -89,7 +95,7 @@ class IndexHandler(BaseHandler):
                     ret['status'] = 'true'
                     ret['message'] = '文章保存成功'
                 except Exception as e:
-                    print(e)
+                    Logger().log(e, True)
                     ret['message'] = '文章保存失败'
             elif action == 'patch':
                 try:
@@ -103,7 +109,7 @@ class IndexHandler(BaseHandler):
                     ret['status'] = 'true'
                     ret['message'] = '文章修改成功'
                 except Exception as e:
-                    print(e)
+                    Logger().log(e, True)
                     ret['message'] = '文章修改失败'
 
             elif action == 'delete':
@@ -113,40 +119,13 @@ class IndexHandler(BaseHandler):
                     ret['status'] = 'true'
                     ret['message'] = '文章删除成功'
                 except Exception as e:
-                    print(e)
+                    Logger().log(e, True)
                     ret['message'] = '文章删除失败'
             else:
                 ret['message'] = '请求非法'
+                Logger().log(ret, True)
         else:
             ret['message'] = '参数非法'
+            Logger().log(ret, True)
         self.write(json.dumps(ret))
 
-
-# class AdminHandle(tornado.web.RequestHandler):
-#     def get(self):
-#         user_list = []
-#         objs = User.select()
-#         for obj in objs:
-#             user_list.append([obj.username, obj.password, obj.created_date])
-#         self.render('index/admin.html', user_list=user_list, username='admin')
-#
-#     def post(self, *args, **kwargs):
-#         ret = {'status': 'ture', 'message': '', 'data': ''}
-#         username = self.get_argument('username', None)
-#         password = self.get_argument('password', None)
-#         if username and password:
-#             user_obj = User()
-#             user_obj.username = username
-#             user_obj.password = password
-#             try:
-#                 user_obj.save()
-#                 ret['message'] = '用户添加成功'
-#             except Exception as e:
-#                 print(e)
-#                 ret['status'] = 'false'
-#                 ret['message'] = '添加失败，此用户已经存在或者其他问题'
-#         else:
-#             ret['status'] = 'false'
-#             ret['message'] = '用户名或者密码没有填写'
-#         return self.write(json.dumps(ret))
-#

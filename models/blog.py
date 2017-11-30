@@ -43,7 +43,6 @@ class Article(BaseModel):
     content = TextField(verbose_name='文章内容')
     created_date = DateTimeField(verbose_name='创建时间', default=datetime.datetime.now)
     update_date = DateTimeField(verbose_name='更新时间', default=datetime.datetime.now)
-    # article_type = IntegerField(choices=type_choices, default=None)
     article_type = ForeignKeyField(ArticleType)
 
 
