@@ -46,7 +46,12 @@ class Article(BaseModel):
     article_type = ForeignKeyField(ArticleType)
 
 
-
+class FriendlyLink(BaseModel):
+    name = CharField(verbose_name='友链名称', max_length=64)
+    link = CharField(verbose_name='友链url', max_length=64, unique=True)
+    weight = IntegerField(verbose_name='友链权重')
+    created_date = DateTimeField(verbose_name='创建时间', default=datetime.datetime.now)
+    update_date = DateTimeField(verbose_name='更新时间', default=datetime.datetime.now)
 
 
 
@@ -156,7 +161,44 @@ def create_at():
         at = ArticleType(article_type=i[1])
         at.save()
 
+def create_fl():
+    blog.connect()
+    blog.create_tables([FriendlyLink])
+    blog.close()
+
+# create_fl()
 #
+
+def insert_fl():
+    fl_list = [
+        {'name': '百度',
+         'link': 'http://www.baidu.com',
+         'weight': '10'},
+        {'name': 'Hao123',
+         'link': 'http://www.hao123.com',
+         'weight': '11'},
+        {'name': '知乎',
+         'link': 'http://www.zhihu.com',
+         'weight': '12'},
+        {'name': '淘宝',
+         'link': 'http://www.taobao.com',
+         'weight': '13'},
+        {'name': 'Web',
+         'link': 'http://www.prozhi.com',
+         'weight': '5'},
+    ]
+
+    for i in fl_list:
+        at = FriendlyLink(name=i['name'])
+        at.link = i['link']
+        at.weight = i['weight']
+        at.save()
+
+# blog_objs = FriendlyLink.select().order_by(FriendlyLink.weight)
+# for i in blog_objs:
+#     print(i.name, i.weight)
+
+# insert_fl()
 # create_table()
 # create_at()
 

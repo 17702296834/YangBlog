@@ -34,23 +34,22 @@
 		<br>
 		<div id="entry-single" class="entry">
             {% raw article_data['content'] %}
-			<p class="announce"><span><strong>声明:</strong></span> 除非注明，<a href="https://zww.me/">ZWWoOoOo</a>文章均为原创，转载请以链接形式标明本文地址<br>本文地址: <a href="https://zww.me/26725.zsay">https://zww.me/26725.zsay</a></p>					</div>
-				<div id="nav-below" class="cf">
-			<div class="nav-previous"><a href="https://zww.me/26720.zsay" rel="prev">更新到 WordPress 4.9，都 4.9 了，时间飞逝...</a> </div>
-			<div class="nav-next">(This is the latest article)</div>
+			<p class="announce"><span><strong>声明:</strong></span> 除非注明，<a href="https://zww.me/">ZWWoOoOo</a>文章均为原创，转载请以链接形式标明本文地址<br>本文地址: <a href="https://zww.me/26725.zsay">https://zww.me/26725.zsay</a></p>
 		</div>
     </article>
     </div>
+	<hr>
+	<span class="col-md-4 text-right">
+
+		<div class="nav-previous"><a class="button button-primary button-pill button-small" href="/article/{{get_aid(article_data['id'], 'prev')}}.html" rel="prev">上一篇</a></div>
+	</span>
+	<span class="col-md-4 text-left">
+		<div class="nav-previous"><a class="button button-primary button-pill button-small" href="/article/{{get_aid(article_data['id'], 'next')}}.html" rel="next">下一篇</a></div>
+	</span>
 </div>
 <div class="row pg-count">
     <div>
 
     </div>
 </div>
-{% end %}
-
-{% block JS %}
-<script>
-
-</script>
 {% end %}

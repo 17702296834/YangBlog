@@ -20,16 +20,17 @@
     <!--使用navbar-fixed-top固定到顶部-->
     <nav class="nav navbar-default navbar-fixed-top" role="navigation">
         <!--使用流布局-->
-        <div class="container-fluid">
+        <div class="container">
             <!--指定logo位置及图片-->
             <div class="navbar-header">
-                <a href="/index" class="navbar-brand">
-                YangBlog
-                </a>
+                <a href="/index" class="navbar-brand">{{get_title_data('title')}}</a>
             </div>
             <div class="collapse navbar-collapse" id="menu">
                 <!--菜单栏-->
                 <!--使用位置来指定放在那里-->
+                <ul class="nav navbar-nav navbar-left">
+					<li><a>{{get_title_data('site')}}</a></li>
+				</ul>
                 <ul class="nav navbar-nav navbar-right">
                     <!--超链接-->
                     <li><a href="/about" class="navbar-link">关于</a></li>
@@ -40,6 +41,7 @@
 
     <!--添加一个container 做body-->
 	<div class="container body">
+        {% raw xsrf_form_html() %}
         <!--标题栏-->
         <h1 class="page-header">登录管理</h1>
         <!--表单-->
@@ -81,7 +83,7 @@
     <div class="row">
         <div class="col-md-12 text-center panel-footer navbar-fixed-bottom">
             <!-- 底部固定区域 -->
-            © Prozhi.com 版权所没有
+            {{ footer_info() }}
         </div>
 	</div>
     <script src="/static/js/jquery.min.js"></script>

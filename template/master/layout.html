@@ -38,7 +38,7 @@
 			margin: 5px;
 		}
 		.right-menu > .content {
-			height: 100px;
+			height: 200px;
 			font-weight: 400;
 			line-height: 26px;
 			margin-left: -20px;
@@ -55,11 +55,14 @@
         <div class="container">
             <!--指定logo位置及图片-->
             <div class="navbar-header">
-                <a href="/index" class="navbar-brand">YangBlog</a>
+                <a href="/index" class="navbar-brand">{{get_title_data('title')}}</a>
             </div>
             <div class="collapse navbar-collapse" id="menu">
-                <!--菜单栏-->
+				<!--菜单栏-->
                 <!--使用位置来指定放在那里-->
+				<ul class="nav navbar-nav navbar-left">
+					<li><a>{{get_title_data('site')}}</a></li>
+				</ul>
                 <ul class="nav navbar-nav navbar-right">
                     <!--超链接-->
 					<form class="navbar-form navbar-left" action="/search" method="GET">
@@ -75,6 +78,7 @@
     </nav>
 
 	<div class="container body">
+		{% raw xsrf_form_html() %}
 		<div class="row content">
 			<div class="col-md-10 body-data">
 				{% block Body %} {% end %}
@@ -85,8 +89,7 @@
 					<div class="col-md-12 menu-item active">友情链接</div>
 					<div class="col-md-12 content">
 						<ul>
-							<li><a href="http://www.baidu.com">百度</a></li>
-							<li><a href="http://www.hao123.com">Hao123</a></li>
+							{% raw frindly_link() %}
 						</ul>
 					</div>
 					<div class="col-md-12 menu-item">什么都没有</div>
@@ -98,7 +101,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-md-12 text-center navbar-fixed-bottom panel-footer">©2017 prozhi.com 京ICP证030173号  京公网安备11000002000001号</div>
+				<div class="col-md-12 text-center navbar-fixed-bottom panel-footer">{{ footer_info() }}</div>
 			</div>
 		</div>
 	</div>

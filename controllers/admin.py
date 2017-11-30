@@ -46,7 +46,11 @@ class IndexHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         current_page = self.get_argument("p", 1)
-        current_page = int(current_page)
+        try:
+            current_page = int(current_page)
+        except ValueError as e:
+            Logger().log(e, True)
+            self.redirect('/admin/index')
         data_count = Article.select().count()
         page_obj = Page(current_page=current_page, data_count=data_count, per_page_count=15)
         page_html = page_obj.page_str(base_url="/admin/index?")

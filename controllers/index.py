@@ -7,7 +7,11 @@ from utils.log import Logger
 class IndexHandler(RequestHandler):
     def get(self):
         current_page = self.get_argument("p", 1)
-        current_page = int(current_page)
+        try:
+            current_page = int(current_page)
+        except ValueError as e:
+            Logger().log(e, True)
+            self.redirect('/index')
         data_count = Article.select().count()
         page_obj = Page(current_page=current_page, data_count=data_count)
         page_html = page_obj.page_str(base_url="index?")
@@ -60,7 +64,11 @@ class SearchHandler(RequestHandler):
     def get(self):
         s_kw = self.get_argument('search', None)
         current_page = self.get_argument("p", 1)
-        current_page = int(current_page)
+        try:
+            current_page = int(current_page)
+        except ValueError as e:
+            Logger().log(e, True)
+            self.redirect('/index')
         if s_kw:
             data_count = Article.select().where(Article.title.contains(s_kw)).count()
             page_obj = Page(current_page=current_page, data_count=data_count)

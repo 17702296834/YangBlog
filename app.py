@@ -4,6 +4,7 @@ import tornado.ioloop
 import tornado.web
 from controllers import index
 from controllers import admin
+from controllers import uimethods as umt
 
 settings = {
     'template_path': 'template',
@@ -11,9 +12,10 @@ settings = {
     'static_url_prefix': '/static/',
     'cookie_secret': '43809138f51b96f8ac24e79b3a2cb482',
     'login_url': '/admin/login',
-    #'xsrf_cookies': True,
+    'xsrf_cookies': True,
     'debug': True,
     'autoreload': True,
+    'ui_methods': umt,
 }
 
 application = tornado.web.Application([
