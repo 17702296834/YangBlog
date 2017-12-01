@@ -13,7 +13,7 @@
 * /index 首页 文章列表，分页展示
 * /article 文章页，上一页，下一页按钮
 * /search 搜索标题展示页面，分页展示
-* 头部标题、底部信息、右侧友联使用ui_methods功能实现
+* 头部标题、底部信息、右侧友链使用ui_methods功能实现
 * /admin/index 后端管理页面，实现文章增加，删除，更改
 * /admin/login 登录，使用Tornado的secure_cookie 认证
 * /upload 上传图片处理，直接上传到Qiniu对象存储中
