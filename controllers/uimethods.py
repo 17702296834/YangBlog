@@ -38,29 +38,3 @@ def frindly_link(self):
     except Exception as e:
         Logger().log(e, True)
         return server_error
-
-
-def get_aid(self, a_id, action):
-    flag = False
-    if a_id and action:
-        if action == 'prev':
-            while not flag:
-                try:
-                    article_obj = Article.get(id=a_id-1)
-                    if article_obj:
-                        flag = True
-                        return article_obj.id
-                except Article.DoesNotExist as e:
-                    Logger().log(e, True)
-                a_id -= 1
-        elif action == 'next':
-            while not flag:
-                try:
-                    article_obj = Article.get(id=a_id + 1)
-                    if article_obj:
-                        flag = True
-                        return article_obj.id
-                except Article.DoesNotExist as e:
-                    Logger().log(e, True)
-                a_id += 1
-    return 1

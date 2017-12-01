@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import tornado.ioloop
 import tornado.web
 from controllers import index
@@ -25,17 +24,17 @@ application = tornado.web.Application([
     (r"/article/([\d]+).html", index.ArticleHandler),
     # 查询
     (r"/search", index.SearchHandler),
-    # 查询
+    # 关于
     (r"/about", index.AboutHandler),
-    # Admin login
-    (r"/admin/login", admin.LoginHandler),
     # 登录
+    (r"/admin/login", admin.LoginHandler),
+    # 主页
     (r"/admin/index", admin.IndexHandler),
     # 登出
     (r"/admin/logout", admin.LogoutHandler),
-    # # 上传
-    # (r"/upload", index.UploadFileNginxHandle),
-    # 404
+    # 上传图片
+    (r"/upload", admin.UploadHandler),
+    # 404处理页面
     (r".*", index.NotfindHandler)
 ], **settings)
 

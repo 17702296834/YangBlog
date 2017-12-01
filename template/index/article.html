@@ -23,7 +23,7 @@
 {% block Body %}
 <div class="row">
     <div class="article-body">
-    <article class="post" id="article-{{article_data['id']}}">
+    <article class="post" a-id="{{article_data['id']}}">
 		<div class="post-header">
 			<i class="p-type">YangEver</i>
 			<h1 class="title">{{article_data['title']}}</h1>
@@ -34,22 +34,35 @@
 		<br>
 		<div id="entry-single" class="entry">
             {% raw article_data['content'] %}
-			<p class="announce"><span><strong>声明:</strong></span> 除非注明，<a href="https://zww.me/">ZWWoOoOo</a>文章均为原创，转载请以链接形式标明本文地址<br>本文地址: <a href="https://zww.me/26725.zsay">https://zww.me/26725.zsay</a></p>
 		</div>
+		<hr>
+		<p class="announce"><span><strong>声明:</strong></span> 除非注明，<a href="/index">Prozhi</a>文章均为原创，转载请以链接形式标明本文地址<br>本文地址: <a href="/article/{{article_data['id']}}.html">点击跳转</a></p>
     </article>
     </div>
 	<hr>
-	<span class="col-md-4 text-right">
-
-		<div class="nav-previous"><a class="button button-primary button-pill button-small" href="/article/{{get_aid(article_data['id'], 'prev')}}.html" rel="prev">上一篇</a></div>
-	</span>
-	<span class="col-md-4 text-left">
-		<div class="nav-previous"><a class="button button-primary button-pill button-small" href="/article/{{get_aid(article_data['id'], 'next')}}.html" rel="next">下一篇</a></div>
-	</span>
+	<div class="page-button">
+		<span class="col-md-4 text-right">
+			<div class="nav-previous"><a class="button button-primary button-pill button-small" href="/article/{{article_data['p_a_id']}}.html" id="{{article_data['p_a_id']}}" rel="prev">上一篇</a></div>
+		</span>
+		<span class="col-md-4 text-left">
+			<div class="nav-previous"><a class="button button-primary button-pill button-small" href="/article/{{article_data['n_a_id']}}.html" id="{{article_data['n_a_id']}}" rel="next">下一篇</a></div>
+		</span>
+	</div>
 </div>
 <div class="row pg-count">
     <div>
-
     </div>
 </div>
+{% end %}
+
+{% block JS %}
+<script>
+	$(function () {
+		$('.page-button').find('a').each(function () {
+			if($(this).attr('id') === $('article').attr('a-id')){
+			    $(this).attr('class', 'button button-pill button-small').attr('href','javascript:void(0);').text('没有了')
+			}
+        })
+    })
+</script>
 {% end %}

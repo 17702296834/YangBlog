@@ -3,9 +3,12 @@ from tornado.web import RequestHandler
 import tornado.web
 import datetime
 import json
-from models.blog import Blog, Article, UserInfo, ArticleType
+import uuid
+import qiniu
+from models.blog import Blog, Article, UserInfo, ArticleType, UploadFileInfo
 from utils.pagination import Page
 from utils.log import Logger
+from config import ACCESS_KEY, SECRET_KEY, BUCKET_NAME, BASE_STATIC_URL
 
 
 class BaseHandler(RequestHandler):
@@ -91,6 +94,7 @@ class IndexHandler(BaseHandler):
         if article_id and title and article_type and summary and content and action:
             if action == 'post':
                 try:
+                    # Article.insert(title=title, article_type=article_type, summary=summary, content=content).execute()
                     article_obj = Article(title=title)
                     article_obj.article_type_id = article_type
                     article_obj.summary = summary
@@ -115,7 +119,6 @@ class IndexHandler(BaseHandler):
                 except Exception as e:
                     Logger().log(e, True)
                     ret['message'] = '文章修改失败'
-
             elif action == 'delete':
                 try:
                     article_obj = Article.get(Article.id == article_id)
@@ -133,3 +136,28 @@ class IndexHandler(BaseHandler):
             Logger().log(ret, True)
         self.write(json.dumps(ret))
 
+
+class UploadHandler(BaseHandler):
+    @tornado.web.authenticated
+    def post(self, *args, **kwargs):
+        ret = {'status': 'false', 'message': '', 'data': ''}
+        file_metas = self.request.files["editorImage"]
+        q_obj = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+        key = str(uuid.uuid1())
+        token = q_obj.upload_token(BUCKET_NAME, key, 3600)
+        for meta in file_metas:
+            file_name = meta['filename']
+            q_ret, info = qiniu.put_data(token, key, meta['body'])
+            if q_ret is not None:
+                ret['status'] = 'true'
+                ret['message'] = '图片上传成功'
+                ret['data'] = BASE_STATIC_URL + key
+                try:
+                    UploadFileInfo.insert(name=file_name, key=key, hash=q_ret['hash']).execute()
+                except Exception as e:
+                    Logger().log(e, True)
+                    ret['message'] = '图片上传失败'
+            else:
+                Logger().log(info, True)
+                ret['message'] = '图片上传失败'
+        return self.write(json.dumps(ret))

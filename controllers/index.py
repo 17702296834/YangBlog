@@ -39,25 +39,44 @@ class IndexHandler(RequestHandler):
 
 class ArticleHandler(RequestHandler):
     def get(self, article_id=None):
-        try:
-            article_obj = Article.get(Article.id == article_id)
-            article_data = {'id': article_obj.id,
-                            'title': article_obj.title,
-                            'content': article_obj.content,
-                            'read_count': article_obj.read_count,
-                            'created_date': article_obj.created_date,
-                            'update_date': article_obj.update_date,
-                            'article_type': article_obj.article_type.article_type
-                            }
-            query = Article.update(read_count=Article.read_count + 1).where(Article.id == article_id)
-            query.execute()
-        except Article.DoesNotExist as e:
-            Logger().log(e, True)
-            return self.render('index/404.html')
-        except Exception as e:
-            Logger().log(e, True)
-            return self.render('index/500.html')
-        self.render('index/article.html', article_data=article_data)
+        if article_id:
+            try:
+                article_obj = Article.get(Article.id == article_id)
+                article_data = {'id': article_obj.id,
+                                'title': article_obj.title,
+                                'content': article_obj.content,
+                                'read_count': article_obj.read_count,
+                                'created_date': article_obj.created_date,
+                                'update_date': article_obj.update_date,
+                                'article_type': article_obj.article_type.article_type
+                                }
+                Article.update(read_count=Article.read_count + 1).where(Article.id == article_id).execute()
+                n_article_obj = Article.select(Article.id).where(Article.id > article_id).order_by(Article.id.asc()).limit(1)
+                n_a_id = []
+                for i in n_article_obj:
+                    n_a_id.append(i.id)
+                if len(n_a_id) == 1:
+                    n_a_id = n_a_id[0]
+                else:
+                    n_a_id = article_id
+                article_data['n_a_id'] = n_a_id
+                p_article_obj = Article.select(Article.id).where(Article.id < article_id).order_by(Article.id.desc()).limit(1)
+                p_a_id = []
+                for i in p_article_obj:
+                    p_a_id.append(i.id)
+                if len(p_a_id) == 1:
+                    p_a_id = p_a_id[0]
+                else:
+                    p_a_id = article_id
+                article_data['p_a_id'] = p_a_id
+            except Article.DoesNotExist as e:
+                Logger().log(e, True)
+                return self.render('index/404.html')
+            except Exception as e:
+                Logger().log(e, True)
+                return self.render('index/500.html')
+            self.render('index/article.html', article_data=article_data)
+        return self.render('index/404.html')
 
 
 class SearchHandler(RequestHandler):

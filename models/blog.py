@@ -54,12 +54,18 @@ class FriendlyLink(BaseModel):
     update_date = DateTimeField(verbose_name='更新时间', default=datetime.datetime.now)
 
 
+class UploadFileInfo(BaseModel):
+    name = CharField(verbose_name='文件名称', max_length=128)
+    key = CharField(verbose_name='对象存储Key', max_length=64)
+    hash = CharField(verbose_name='对象存储HASH', max_length=64)
+    created_date = DateTimeField(verbose_name='创建时间', default=datetime.datetime.now)
 
 
 ##########################
 def create_tables():
     blog.connect()
-    blog.create_tables([UserInfo, Blog, Article])
+    # blog.create_tables([UserInfo, Blog, Article])
+    blog.create_tables([UploadFileInfo])
     blog.close()
 
 
@@ -68,6 +74,7 @@ def drop_tables():
     blog.drop_tables([UserInfo, Blog, Article])
     blog.close()
 
+# create_tables()
 
 # drop_tables()
 # create_tables()
@@ -216,3 +223,4 @@ def insert_fl():
 # print(at.article_type.article_type)
 # for a in ArticleType.select():
 #     print(a.article_type)
+

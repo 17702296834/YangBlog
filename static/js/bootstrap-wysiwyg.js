@@ -86,6 +86,45 @@
 					if (/^image\//.test(fileInfo.type)) {
 						$.when(readFileIntoDataUrl(fileInfo)).done(function (dataUrl) {
 							execCommand('insertimage', dataUrl);
+							console.log('插入图片成功' + fileInfo.size);
+							var form=new FormData();
+							var re_img_url = /^data:image/;
+						    form.append("editorImage",fileInfo);
+						    $.ajax({
+						  	  type:'POST',
+						  	  url: '/upload',
+						  	  data: form,
+						  	  processData: false,  // tell jQuery not to process the data
+						  	  contentType: false,  // tell jQuery not to set contentType
+						  	  success: function(arg){
+						  		  arg = JSON.parse(arg);
+						  		  console.log(arg);
+						  		  if(arg.status){
+									$('#editor').find('img').each(function () {
+									  if(re_img_url.test($(this).attr('src'))){
+										$(this).attr('src', arg.data);
+									  }
+									});
+									$('.change-article-msg').text(arg.message).css("color",'#4cae4c');
+								  }else {
+						  		  	$('#editor').find('img').each(function () {
+									  	if(re_img_url.test($(this).attr('src'))){
+											$(this).remove();
+									  	}
+                                  	});
+						  		  	$('.change-article-msg').text(arg.message).css("color",'#d9534f');
+								  }
+						  	  },
+						  	  error: function () {
+								  console.log('server error');
+								  $('#editor').find('img').each(function () {
+									  	if(re_img_url.test($(this).attr('src'))){
+											$(this).remove();
+									  	}
+                                  });
+								  $('.change-article-msg').text('服务器出小差了,图片上传失败').css("color",'#d9534f');
+                              }
+						    })
 						}).fail(function (e) {
 							options.fileUploadError("file-reader", e);
 						});
