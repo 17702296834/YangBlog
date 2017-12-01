@@ -39,3 +39,21 @@
 * 使用 python app.py 启动，建议使用supervisor 管理程序运行
 
 ## 效果图
+* index
+![index](https://github.com/lgphone/YangBlog/blob/master/doc/pic/index.png)
+* article
+![article](https://github.com/lgphone/YangBlog/blob/master/doc/pic/article.png)
+* search
+![search](https://github.com/lgphone/YangBlog/blob/master/doc/pic/search.png)
+* about
+![about](https://github.com/lgphone/YangBlog/blob/master/doc/pic/about.png)
+* page
+![page](https://github.com/lgphone/YangBlog/blob/master/doc/pic/page.png)
+* admin index
+![admin index](https://github.com/lgphone/YangBlog/blob/master/doc/pic/admin_index.png)
+* add article
+![add article](https://github.com/lgphone/YangBlog/blob/master/doc/pic/add.png)
+* del article
+![del article](https://github.com/lgphone/YangBlog/blob/master/doc/pic/del.png)
+* edit article
+![edit article](https://github.com/lgphone/YangBlog/blob/master/doc/pic/edit.png)
