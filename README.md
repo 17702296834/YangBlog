@@ -1,5 +1,5 @@
 # YangBlog
-
+* 两个星期'撸'好的一个博客程序 XD
 ## 技术栈
 * 基于 Py3 + Tornado
 * 前端框架 Bootstrap + JQuery
