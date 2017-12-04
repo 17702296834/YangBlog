@@ -223,4 +223,6 @@ def insert_fl():
 # print(at.article_type.article_type)
 # for a in ArticleType.select():
 #     print(a.article_type)
-
+# for i in Article.select().where(Article.article_type.article_type).execute():
+# for i in Article.select().join(ArticleType).where(ArticleType.article_type == 'Python').execute():
+#     print(i.article_type.article_type)

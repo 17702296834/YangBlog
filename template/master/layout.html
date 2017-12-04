@@ -25,13 +25,9 @@
 			font-size: 16px;
 			font-weight: 400;
 			line-height: 26px;
-			margin-left: -20px;
 			padding-left: 20px;
-			color: #343434;
-			background-image: linear-gradient(to right,#f1f1f1 0,#fff 5%,#f1f1f1 90%);
-		}
-		.right-menu > .active {
 			color: #1E9FFF;
+			background-image: linear-gradient(to right,#f1f1f1 0,#fff 5%,#f1f1f1 90%);
 		}
 		.right-menu > div {
 			margin: 5px;
@@ -42,6 +38,9 @@
 			line-height: 26px;
 			margin-left: -20px;
 			padding-left: 20px;
+		}
+		.content a {
+			color: #000;!important;
 		}
 	</style>
 	{% block CSS %} {% end %}
@@ -66,7 +65,7 @@
                     <!--超链接-->
 					<form class="navbar-form navbar-left" action="/search" method="GET">
 						<div class="form-group">
-						  <input type="text" class="form-control" name="search" placeholder="搜索标题">
+						  <input type="text" class="form-control" name="title" placeholder="搜索标题">
 						</div>
 						<button type="submit" class="button button-primary button-rounded button-small">搜索</button>
 					</form>
@@ -86,18 +85,30 @@
 			<div class="col-md-2">
 				<div class="row right-menu">
 					<div class="col-md-12 menu-item time"><h5></h5></div>
+					<div class="col-md-12 menu-item">最热文章</div>
+					<div class="col-md-12 content">
+						<ul>
+							{% raw hottest_link() %}
+						</ul>
+					</div>
+					<div class="col-md-12 menu-item">Tag:</div>
+					<div class="col-md-12 content">
+						<ul>
+							{% raw tag_link() %}
+						</ul>
+					</div>
+					<div class="col-md-12 menu-item">最后更新</div>
+					<div class="col-md-12 content">
+						<ul>
+							{% raw last_change_link() %}
+						</ul>
+					</div>
 					<div class="col-md-12 menu-item active">友情链接</div>
 					<div class="col-md-12 content">
 						<ul>
 							{% raw frindly_link() %}
 						</ul>
 					</div>
-					<div class="col-md-12 menu-item">最新文章</div>
-					<div class="col-md-12 content"><a href="http://www.baidu.com">百度</a></div>
-					<div class="col-md-12 menu-item">Tag:</div>
-					<div class="col-md-12 content"><a href="http://www.baidu.com">百度</a></div>
-					<div class="col-md-12 menu-item">最近更新</div>
-					<div class="col-md-12 content"><a href="http://www.baidu.com">百度</a></div>
 				</div>
 			</div>
 			<div class="row">
@@ -126,7 +137,6 @@
 			var cM = data.getMinutes();
 			var ctime_m = ch + ':' + cM;
 			var ctime = ch + ' ' + cM;
-//			var cy = data.getFullYear();
 			var cm = data.getMonth() + 1;
 			var cd = data.getDate();
 			var cj = data.getDay();

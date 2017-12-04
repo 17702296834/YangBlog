@@ -34,8 +34,11 @@ application = tornado.web.Application([
     (r"/admin/logout", admin.LogoutHandler),
     # 上传图片
     (r"/upload", admin.UploadHandler),
+    # 文章页
+    (r"/tag/([\w]+)", index.TagsHandler),
     # 404处理页面
-    (r".*", index.NotfindHandler)
+    (r"/404", index.NotfindHandler),
+    (r".*", index.NotfindHandler),
 ], **settings)
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 from tornado.web import RequestHandler
-from models.blog import Blog, Article, UserInfo
+from models.blog import Blog, Article, UserInfo, ArticleType
 from utils.pagination import Page
 from utils.log import Logger
 
@@ -71,33 +71,35 @@ class ArticleHandler(RequestHandler):
                 article_data['p_a_id'] = p_a_id
             except Article.DoesNotExist as e:
                 Logger().log(e, True)
-                return self.render('index/404.html')
+                return self.redirect('/404')
             except Exception as e:
                 Logger().log(e, True)
                 return self.render('index/500.html')
             self.render('index/article.html', article_data=article_data)
-        return self.render('index/404.html')
+        return self.redirect('/404')
 
 
 class SearchHandler(RequestHandler):
     def get(self):
-        s_kw = self.get_argument('search', None)
+        title = self.get_argument('title', None)
         current_page = self.get_argument("p", 1)
         try:
             current_page = int(current_page)
         except ValueError as e:
             Logger().log(e, True)
             self.redirect('/index')
-        if s_kw:
-            data_count = Article.select().where(Article.title.contains(s_kw)).count()
+        if title:
+            data_count = Article.select().where(Article.title.contains(title)).count()
+            if data_count <= 0:
+                return self.redirect('/404')
             page_obj = Page(current_page=current_page, data_count=data_count)
-            page_html = page_obj.page_str(base_url="search?search={_kw}&".format(_kw=s_kw))
+            page_html = page_obj.page_str(base_url="search?title={_kw}&".format(_kw=title))
             search_list = []
             try:
                 if current_page == 1:
-                    search_objs = Article.select().where(Article.title.contains(s_kw))[-page_obj.end:]
+                    search_objs = Article.select().where(Article.title.contains(title))[-page_obj.end:]
                 else:
-                    search_objs = Article.select().where(Article.title.contains(s_kw))[-page_obj.end:-page_obj.start]
+                    search_objs = Article.select().where(Article.title.contains(title))[-page_obj.end:-page_obj.start]
                 for search_obj in search_objs:
                     search_list.append({'id': search_obj.id,
                                         'title': search_obj.title,
@@ -108,6 +110,42 @@ class SearchHandler(RequestHandler):
                                         })
                 search_list.reverse()
                 self.render('index/search.html', search_list=search_list, page_html=page_html)
+            except Exception as e:
+                Logger().log(e, True)
+                return self.render('index/500.html')
+        self.redirect('/index')
+
+
+class TagsHandler(RequestHandler):
+    def get(self, tag=None):
+        current_page = self.get_argument("p", 1)
+        try:
+            current_page = int(current_page)
+        except ValueError as e:
+            Logger().log(e, True)
+            self.redirect('/index')
+        if tag:
+            data_count = Article.select().join(ArticleType).where(ArticleType.article_type == tag).count()
+            if data_count <= 0:
+                return self.redirect('/404')
+            page_obj = Page(current_page=current_page, data_count=data_count)
+            page_html = page_obj.page_str(base_url="tag/{_tag}&".format(_tag=tag))
+            tag_list = []
+            try:
+                if current_page == 1:
+                    tag_objs = Article.select().join(ArticleType).where(ArticleType.article_type == tag)[-page_obj.end:]
+                else:
+                    tag_objs = Article.select().join(ArticleType).where(ArticleType.article_type == tag)[-page_obj.end:-page_obj.start]
+                for search_obj in tag_objs:
+                    tag_list.append({'id': search_obj.id,
+                                     'title': search_obj.title,
+                                     'summary': search_obj.summary,
+                                     'read_count': search_obj.read_count,
+                                     'created_date': search_obj.created_date,
+                                     'article_type': search_obj.article_type.article_type
+                                     })
+                tag_list.reverse()
+                self.render('index/tag.html', tag_list=tag_list, page_html=page_html)
             except Exception as e:
                 Logger().log(e, True)
                 return self.render('index/500.html')
