@@ -1,27 +1,31 @@
 {% extends '../master/layout.html'%}
 {% block CSS%}
 <style>
+	.article-main {
+		background-color: white;
+		color: #000;
+	}
     .article-body {
         margin: 20px;
     }
     .post {
         margin-bottom: 10px;
     }
+	.post-meta {
+		color: #888;		
+	}
+	.page-button {
+		margin-bottom: 20px;
+	}
     .p-type {
         margin: 0;!important;
         padding: 0;!important;
-    }
-    .pg-count {
-        text-align: center;
-    }
-   .pg-count .page {
-        padding: 5px;
     }
 </style>
 {% end %}
 
 {% block Body %}
-<div class="row">
+<div class="row article-main">
     <div class="article-body">
     <article class="post" a-id="{{article_data['id']}}">
 		<div class="post-header">
@@ -39,19 +43,13 @@
 		<p class="announce"><span><strong>声明:</strong></span> 除非注明，<a href="/index">Prozhi</a>文章均为原创，转载请以链接形式标明本文地址<br>本文地址: <a href="/article/{{article_data['id']}}.html">点击跳转</a></p>
     </article>
     </div>
-	<hr>
+	<br>
 	<div class="page-button">
-		<span class="col-md-4 text-right">
-			<div class="nav-previous"><a class="button button-primary button-pill button-small" href="/article/{{article_data['p_a_id']}}.html" id="{{article_data['p_a_id']}}" rel="prev">上一篇</a></div>
-		</span>
-		<span class="col-md-4 text-left">
-			<div class="nav-previous"><a class="button button-primary button-pill button-small" href="/article/{{article_data['n_a_id']}}.html" id="{{article_data['n_a_id']}}" rel="next">下一篇</a></div>
-		</span>
+			<div class="text-center">
+				<a class="button button-primary button-pill button-small" href="/article/{{article_data['p_a_id']}}.html" id="{{article_data['p_a_id']}}" rel="prev">上一篇</a>
+				<a class="button button-primary button-pill button-small" href="/article/{{article_data['n_a_id']}}.html" id="{{article_data['n_a_id']}}" rel="next">下一篇</a>
+			</div>
 	</div>
-</div>
-<div class="row pg-count">
-    <div>
-    </div>
 </div>
 {% end %}
 
