@@ -38,6 +38,8 @@ application = tornado.web.Application([
     (r"/admin/profile", admin.ProfileHandler),
     # 网站资料管理
     (r"/admin/blog", admin.BlogHandler),
+    # 友链管理
+    (r"/admin/flink", admin.FlinkHandler),
     # 登出
     (r"/admin/logout", admin.LogoutHandler),
     # 出状态图
