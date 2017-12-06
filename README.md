@@ -1,6 +1,6 @@
 # YangBlog
 * 两个星期'撸'好的一个博客程序 XD
-* 暂时不会更新了
+
 ## 技术栈
 * 基于 Py3 + Tornado
 * 前端框架 Bootstrap + JQuery
@@ -49,7 +49,7 @@
 * config.py 中填写自己的qiniu对象存储的ACCESS_KEY，SECRET_KEY，BUCKET_NAME，BASE_STATIC_URL
 * config.py 中修改MYSQL_URL 为自己的地址
 * 使用 python app.py 启动，建议使用supervisor 管理程序运行
-* 出图需要按住服务器端的脚本，定时去上报数据到数据库中，不使用的话就把那段逻辑删除即可，不影响其他功能
+* 出图需要安装服务器端的脚本，定时任务cron去上报数据到数据库中，不使用的话就把那段逻辑删除即可，不影响其他功能
 * 脚本如下
 ```#!/usr/bin/env python3
 import pymysql.cursors
