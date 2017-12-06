@@ -8,7 +8,7 @@ import qiniu
 import sys
 import io
 from utils import get_status
-from models.blog import Blog, Article, UserInfo, ArticleType, UploadFileInfo
+from models.blog import Blog, Article, UserInfo, ArticleType, UploadFileInfo, FriendlyLink
 from utils.pagination import Page
 from utils.log import Logger
 from config import ACCESS_KEY, SECRET_KEY, BUCKET_NAME, BASE_STATIC_URL
@@ -186,6 +186,73 @@ class TagsHandler(BaseHandler):
                 except Exception as e:
                     Logger().log(e, True)
                     ret['message'] = '类型保存失败'
+            else:
+                ret['message'] = '请求非法'
+                Logger().log(ret, True)
+        else:
+            ret['message'] = '参数非法'
+            Logger().log(ret, True)
+        self.write(json.dumps(ret))
+
+
+class FlinkHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        flink_list = []
+        try:
+            flink_objs = FriendlyLink.select()
+            for f in flink_objs:
+                flink_list.append({'id': f.id,
+                                   'name': f.name,
+                                   'link': f.link,
+                                   'weight': f.weight})
+            if len(flink_list) <= 0:
+                return self.redirect('/404')
+            self.render('admin/flink.html', flink_list=flink_list)
+        except Exception as e:
+            Logger().log(e, True)
+            self.render('index/500.html')
+
+    def post(self, *args, **kwargs):
+        ret = {'status': 'false', 'message': '', 'data': ''}
+        flink_id = self.get_argument('flink_id', None)
+        flink_name = self.get_argument('name', None)
+        flink_link = self.get_argument('link', None)
+        flink_weight = self.get_argument('weight', None)
+        action = self.get_argument('action', None)
+        if flink_id and flink_name and flink_link and flink_weight and action:
+            if action == 'post':
+                try:
+                    flink_obj = FriendlyLink(name=flink_name)
+                    flink_obj.link = flink_link
+                    flink_obj.weight = flink_weight
+                    flink_obj.save()
+                    ret['status'] = 'true'
+                    ret['message'] = '友链保存成功'
+                except Exception as e:
+                    Logger().log(e, True)
+                    ret['message'] = '友链保存失败'
+            elif action == 'patch':
+                try:
+                    flink_obj = FriendlyLink.get(FriendlyLink.id == flink_id)
+                    flink_obj.link = flink_link
+                    flink_obj.name = flink_name
+                    flink_obj.weight = flink_weight
+                    flink_obj.save()
+                    ret['status'] = 'true'
+                    ret['message'] = '友链保存成功'
+                except Exception as e:
+                    Logger().log(e, True)
+                    ret['message'] = '友链保存失败'
+            elif action == 'delete':
+                try:
+                    flink_obj = FriendlyLink.get(FriendlyLink.id == flink_id)
+                    flink_obj.delete_instance()
+                    ret['status'] = 'true'
+                    ret['message'] = '友链删除成功'
+                except Exception as e:
+                    Logger().log(e, True)
+                    ret['message'] = '友链删除失败'
             else:
                 ret['message'] = '请求非法'
                 Logger().log(ret, True)
