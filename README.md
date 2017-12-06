@@ -87,7 +87,8 @@ ret = ret.decode('utf-8').replace(' ', '').strip('\n')
 mem_status_data = ret
 save_status = {'cpu':cpu_status_data,'mem': mem_status_data}
 #print(save_status)
-inster_data(save_status)```
+inster_data(save_status)
+```
 
 ## 效果图
 * index
