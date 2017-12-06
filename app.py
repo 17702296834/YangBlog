@@ -28,14 +28,24 @@ application = tornado.web.Application([
     (r"/about", index.AboutHandler),
     # 登录
     (r"/admin/login", admin.LoginHandler),
-    # 主页
+    # Dashboard
     (r"/admin/index", admin.IndexHandler),
+    # Dashboard
+    (r"/admin/article", admin.ArticleHandler),
+    # Tag 管理
+    (r"/admin/tag", admin.TagsHandler),
+    # 个人资料管理
+    (r"/admin/profile", admin.ProfileHandler),
+    # 网站资料管理
+    (r"/admin/blog", admin.BlogHandler),
     # 登出
     (r"/admin/logout", admin.LogoutHandler),
+    # 出状态图
+    (r"/admin/status", admin.StatusHandler),
     # 上传图片
     (r"/upload", admin.UploadHandler),
     # 文章页
-    (r"/tag/([\w]+)", index.TagsHandler),
+    (r"/tag/([\d]+)", index.TagsHandler),
     # 404处理页面
     (r"/404", index.NotfindHandler),
     (r".*", index.NotfindHandler),

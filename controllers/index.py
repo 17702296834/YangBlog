@@ -75,8 +75,8 @@ class ArticleHandler(RequestHandler):
             except Exception as e:
                 Logger().log(e, True)
                 return self.render('index/500.html')
-            self.render('index/article.html', article_data=article_data)
-        return self.redirect('/404')
+            return self.render('index/article.html', article_data=article_data)
+        self.redirect('/404')
 
 
 class SearchHandler(RequestHandler):
@@ -117,25 +117,26 @@ class SearchHandler(RequestHandler):
 
 
 class TagsHandler(RequestHandler):
-    def get(self, tag=None):
+    def get(self, tag_id=None):
         current_page = self.get_argument("p", 1)
         try:
             current_page = int(current_page)
         except ValueError as e:
             Logger().log(e, True)
-            self.redirect('/index')
-        if tag:
-            data_count = Article.select().join(ArticleType).where(ArticleType.article_type == tag).count()
+            return self.redirect('/index')
+        if tag_id:
+            data_count = Article.select().where(Article.article_type_id == tag_id).count()
             if data_count <= 0:
                 return self.redirect('/404')
             page_obj = Page(current_page=current_page, data_count=data_count)
-            page_html = page_obj.page_str(base_url="tag/{_tag}&".format(_tag=tag))
+            page_html = page_obj.page_str(base_url="/tag/{_tid}?".format(_tid=tag_id))
             tag_list = []
             try:
                 if current_page == 1:
-                    tag_objs = Article.select().join(ArticleType).where(ArticleType.article_type == tag)[-page_obj.end:]
+                    # tag_objs = Article.select().join(ArticleType).where(ArticleType.article_type == tag_id)[-page_obj.end:]
+                    tag_objs = Article.select().where(Article.article_type_id == tag_id)[-page_obj.end:]
                 else:
-                    tag_objs = Article.select().join(ArticleType).where(ArticleType.article_type == tag)[-page_obj.end:-page_obj.start]
+                    tag_objs = Article.select().where(Article.article_type_id == tag_id)[-page_obj.end:-page_obj.start]
                 for search_obj in tag_objs:
                     tag_list.append({'id': search_obj.id,
                                      'title': search_obj.title,
@@ -145,7 +146,7 @@ class TagsHandler(RequestHandler):
                                      'article_type': search_obj.article_type.article_type
                                      })
                 tag_list.reverse()
-                self.render('index/tag.html', tag_list=tag_list, page_html=page_html)
+                return self.render('index/tag.html', tag_list=tag_list, page_html=page_html)
             except Exception as e:
                 Logger().log(e, True)
                 return self.render('index/500.html')

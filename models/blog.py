@@ -61,20 +61,42 @@ class UploadFileInfo(BaseModel):
     created_date = DateTimeField(verbose_name='创建时间', default=datetime.datetime.now)
 
 
+class ServerStatus(BaseModel):
+    cpu_load_1 = CharField(max_length=50, verbose_name='1分钟负载', null=True)
+    cpu_load_5 = CharField(max_length=50, verbose_name='5分钟负载', null=True)
+    cpu_load_15 = CharField(max_length=50, verbose_name='15分钟负载', null=True)
+    cpu_iowait = CharField(max_length=50, verbose_name='cpu io', null=True)
+    cpu_system = CharField(max_length=50, verbose_name='cpu sys', null=True)
+    cpu_idle = CharField(max_length=50, verbose_name='cpu idle', null=True)
+    mem = CharField(max_length=50, verbose_name='内存', null=True)
+    disk = CharField(max_length=50, verbose_name='硬盘', null=True)
+    created_date = DateTimeField(verbose_name='创建时间', default=datetime.datetime.now)
+    update_date = DateTimeField(verbose_name='更新时间', default=datetime.datetime.now)
+
 ##########################
 def create_tables():
     blog.connect()
     # blog.create_tables([UserInfo, Blog, Article])
-    blog.create_tables([UploadFileInfo])
+    blog.create_tables([ServerStatus])
     blog.close()
 
 
 def drop_tables():
     blog.connect()
-    blog.drop_tables([UserInfo, Blog, Article])
+    blog.drop_tables([ServerStatus])
     blog.close()
 
+# drop_tables()
 # create_tables()
+
+def create_status():
+    obj = ServerStatus()
+    obj.cpu_load_1 = '0.05'
+    obj.cpu_load_5 = '0.16'
+    obj.cpu_load_15 = '0.27'
+    obj.save()
+
+# create_status()
 
 # drop_tables()
 # create_tables()

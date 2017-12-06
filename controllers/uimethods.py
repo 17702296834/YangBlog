@@ -45,7 +45,7 @@ def tag_link(self):
         tag_objs = ArticleType.select()
         pg_html = ""
         for obj in tag_objs:
-            pg_html += '<li><a href = "/tag/{_kw}" >{_kw}</a></li>'.format(_kw=obj.article_type)
+            pg_html += '<li><a href = "/tag/{_kid}">{_kw}</a></li>'.format(_kid=obj.id, _kw=obj.article_type)
         return pg_html
     except Exception as e:
         Logger().log(e, True)
