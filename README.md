@@ -27,7 +27,7 @@
 * ~~管理界面的Tag分类显示，搜索~~
 * 管理员忘记密码重置
 
-## 更新
+## 更新 20171206
 * /admin/index 管理页面主页，展示服务器状态，目前仅Linux可用，
 * /admin/article 由原来的index迁移到此路由，管理文章
 * /admin/tag 管理tag
