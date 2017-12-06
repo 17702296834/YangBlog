@@ -1,5 +1,5 @@
 # YangBlog
-* 两个星期'撸'好的一个博客程序 XD
+* Tornado Blog
 
 ## 技术栈
 * 基于 Py3 + Tornado
@@ -16,7 +16,7 @@
 * /article 文章页，上一页，下一页按钮
 * /search 搜索标题展示页面，分页展示
 * 头部标题、底部信息、右侧友链使用ui_methods功能实现
-* /admin/index 后端管理页面，实现文章增加，删除，更改
+* /admin/index 后端管理页面，实现文章增加，删除，更
 * /admin/login 登录，使用Tornado的secure_cookie 认证
 * /upload 上传图片处理，直接上传到Qiniu对象存储中
 
@@ -36,6 +36,7 @@
 * /admin/flink 管理友链设置
 * /admin/status 生成状态图片，前端Ajax 定时轮训此地址获取最新图片，目前为1分钟一次
 * 先完成这些吧，暂时不会经常更新了
+
 ## 感谢
 * 开源软件
 * Qiniu云的免费对象存储
