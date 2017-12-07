@@ -102,14 +102,14 @@ inster_data(save_status)
 ![about](https://github.com/lgphone/YangBlog/blob/master/doc/pic/about.png)
 * page
 ![page](https://github.com/lgphone/YangBlog/blob/master/doc/pic/page.png)
-* admin index
-![admin index](https://github.com/lgphone/YangBlog/blob/master/doc/pic/admin_index.png)
+* admin article
+![admin index](https://github.com/lgphone/YangBlog/blob/master/doc/pic/admin_article.png)
 * add article
-![add article](https://github.com/lgphone/YangBlog/blob/master/doc/pic/add.png)
+![add article](https://github.com/lgphone/YangBlog/blob/master/doc/pic/article_add.png)
 * del article
-![del article](https://github.com/lgphone/YangBlog/blob/master/doc/pic/del.png)
+![del article](https://github.com/lgphone/YangBlog/blob/master/doc/pic/article_del.png)
 * edit article
-![edit article](https://github.com/lgphone/YangBlog/blob/master/doc/pic/edit.png)
+![edit article](https://github.com/lgphone/YangBlog/blob/master/doc/pic/article_edit.png)
 * status 
 ![status ](https://github.com/lgphone/YangBlog/blob/master/doc/pic/status.png)
 * admin tag
