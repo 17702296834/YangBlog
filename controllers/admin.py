@@ -1,24 +1,20 @@
-import tornado
-from tornado.web import RequestHandler
-import tornado.web
 import datetime
-import json
-import uuid
-import qiniu
-import sys
 import io
-from utils import get_status
-from models.blog import Blog, Article, UserInfo, ArticleType, UploadFileInfo, FriendlyLink
-from utils.pagination import Page
-from utils.log import Logger
+import json
+import sys
+import uuid
+
+import qiniu
+import tornado.web
+
 from config import ACCESS_KEY, SECRET_KEY, BUCKET_NAME, BASE_STATIC_URL
+from core.request_handler import BaseHandler
+from models.blog import Blog, Article, UserInfo, ArticleType, UploadFileInfo, FriendlyLink
+from utils import get_status
+from utils.log import Logger
+from utils.pagination import Page
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf8')
-
-
-class BaseHandler(RequestHandler):
-    def get_current_user(self):
-        return self.get_secure_cookie("username", None)
 
 
 class LoginHandler(BaseHandler):
@@ -67,12 +63,12 @@ class ArticleHandler(BaseHandler):
         except ValueError as e:
             Logger().log(e, True)
             self.redirect('/admin/index')
-        data_count = Article.select().count()
-        page_obj = Page(current_page=current_page, data_count=data_count, per_page_count=per_page_count)
-        page_html = page_obj.page_str(base_url="/admin/article?")
-        at_list = []
-        article_types = []
         try:
+            data_count = Article.select().count()
+            page_obj = Page(current_page=current_page, data_count=data_count, per_page_count=per_page_count)
+            page_html = page_obj.page_str(base_url="/admin/article?")
+            at_list = []
+            article_types = []
             if current_page == 1:
                 articles = Article.select()[-page_obj.end:]
             else:
@@ -284,8 +280,6 @@ class ProfileHandler(BaseHandler):
         username = self.get_secure_cookie('username', None)
         old_password = self.get_argument('old-password', None)
         new_password = self.get_argument('new-password', None)
-        print(old_password)
-        print(new_password)
         email = self.get_argument('email', None)
         if username and old_password and new_password and email:
             try:
@@ -329,7 +323,6 @@ class BlogHandler(BaseHandler):
         site = self.get_argument('site', None)
         about = self.get_argument('about', None)
         copy_right = self.get_argument('copy_right', None)
-        print(title, site, about, copy_right)
         if title and site and about and copy_right:
             try:
                 blog_obj = Blog.get(Blog.id == 1)

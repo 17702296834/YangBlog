@@ -56,14 +56,7 @@
 				</ul>
                 <ul class="nav navbar-nav navbar-right">
                     <!--超链接-->
-					<form class="navbar-form navbar-left" action="/search" method="GET">
-						<div class="form-group">
-						  <input type="text" class="form-control" name="title" placeholder="搜索标题">
-						</div>
-						<button type="submit" class="button button-primary button-rounded button-small">搜索</button>
-					</form>
-		  			<li><a href="/about">关于我</a></li>
-		  			<li><a href="/admin/index">管理员</a></li>
+					<li class="time"><a></a></li>
                 </ul>
             </div>
         </div>
@@ -74,7 +67,7 @@
 		<div class="row content">
 			<div class="col-md-2">
 				<div class="row left-menu">
-					<div class="col-md-12 menu-item time"><h5></h5></div>
+					<br>
 					<div class="col-md-12 list-group">
 						  <a id="index" href="/admin/index" class="list-group-item">Dashboard</a>
 						  <a id="article" href="/admin/article" class="list-group-item">文章管理</a>
@@ -120,10 +113,10 @@
 			var cd = data.getDate();
 			var cj = data.getDay();
 			var cdata = '周' + cj + ' ' + cm + '月' + cd + '日';
-			if($('.time>h5').text().indexOf(":") > 0 ){
-				$('.time>h5').text(ctime + ' | ' + cdata);
+			if($('.time>a').text().indexOf(":") > 0 ){
+				$('.time>a').text('当前时间：' + ctime + ' | ' + cdata);
 			}else{
-				$('.time>h5').text(ctime_m + ' | ' + cdata);
+				$('.time>a').text('当前时间：' + ctime_m + ' | ' + cdata);
 			}
 		}
 
