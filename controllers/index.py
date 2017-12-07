@@ -1,22 +1,24 @@
-from tornado.web import RequestHandler
-from models.blog import Blog, Article, UserInfo, ArticleType
-from utils.pagination import Page
+from core.request_handler import BaseHandler
+from models.blog import Blog, Article, UserInfo
 from utils.log import Logger
+from utils.pagination import Page
 
 
-class IndexHandler(RequestHandler):
+class IndexHandler(BaseHandler):
     def get(self):
         current_page = self.get_argument("p", 1)
+        per_page_count = self.get_argument("pre", 10)
         try:
             current_page = int(current_page)
+            per_page_count = int(per_page_count)
         except ValueError as e:
             Logger().log(e, True)
             self.redirect('/index')
-        data_count = Article.select().count()
-        page_obj = Page(current_page=current_page, data_count=data_count)
-        page_html = page_obj.page_str(base_url="index?")
-        at_list = []
         try:
+            data_count = Article.select().count()
+            page_obj = Page(current_page=current_page, data_count=data_count, per_page_count=per_page_count)
+            page_html = page_obj.page_str(base_url="index?")
+            at_list = []
             if current_page == 1:
                 article_objs = Article.select()[-page_obj.end:]
             else:
@@ -34,10 +36,12 @@ class IndexHandler(RequestHandler):
         except Exception as e:
             Logger().log(e, True)
             return self.render('index/500.html')
+        if current_page == 1 and len(at_list) < per_page_count:
+            page_html = ""
         self.render('index/index.html', at_list=at_list, page_html=page_html)
 
 
-class ArticleHandler(RequestHandler):
+class ArticleHandler(BaseHandler):
     def get(self, article_id=None):
         if article_id:
             try:
@@ -79,23 +83,25 @@ class ArticleHandler(RequestHandler):
         self.redirect('/404')
 
 
-class SearchHandler(RequestHandler):
+class SearchHandler(BaseHandler):
     def get(self):
         title = self.get_argument('title', None)
         current_page = self.get_argument("p", 1)
+        per_page_count = self.get_argument("pre", 10)
         try:
             current_page = int(current_page)
+            per_page_count = int(per_page_count)
         except ValueError as e:
             Logger().log(e, True)
             self.redirect('/index')
         if title:
-            data_count = Article.select().where(Article.title.contains(title)).count()
-            if data_count <= 0:
-                return self.redirect('/404')
-            page_obj = Page(current_page=current_page, data_count=data_count)
-            page_html = page_obj.page_str(base_url="search?title={_kw}&".format(_kw=title))
-            search_list = []
             try:
+                data_count = Article.select().where(Article.title.contains(title)).count()
+                if data_count <= 0:
+                    return self.redirect('/404')
+                page_obj = Page(current_page=current_page, data_count=data_count, per_page_count=per_page_count)
+                page_html = page_obj.page_str(base_url="search?title={_kw}".format(_kw=title))
+                search_list = []
                 if current_page == 1:
                     search_objs = Article.select().where(Article.title.contains(title))[-page_obj.end:]
                 else:
@@ -109,6 +115,8 @@ class SearchHandler(RequestHandler):
                                         'article_type': search_obj.article_type.article_type
                                         })
                 search_list.reverse()
+                if current_page == 1 and len(search_list) < per_page_count:
+                    page_html = ""
                 self.render('index/search.html', search_list=search_list, page_html=page_html)
             except Exception as e:
                 Logger().log(e, True)
@@ -116,24 +124,25 @@ class SearchHandler(RequestHandler):
         self.redirect('/index')
 
 
-class TagsHandler(RequestHandler):
+class TagsHandler(BaseHandler):
     def get(self, tag_id=None):
         current_page = self.get_argument("p", 1)
+        per_page_count = self.get_argument("pre", 10)
         try:
             current_page = int(current_page)
+            per_page_count = int(per_page_count)
         except ValueError as e:
             Logger().log(e, True)
             return self.redirect('/index')
         if tag_id:
-            data_count = Article.select().where(Article.article_type_id == tag_id).count()
-            if data_count <= 0:
-                return self.redirect('/404')
-            page_obj = Page(current_page=current_page, data_count=data_count)
-            page_html = page_obj.page_str(base_url="/tag/{_tid}?".format(_tid=tag_id))
-            tag_list = []
             try:
+                data_count = Article.select().where(Article.article_type_id == tag_id).count()
+                if data_count <= 0:
+                    return self.redirect('/404')
+                page_obj = Page(current_page=current_page, data_count=data_count, per_page_count=per_page_count)
+                page_html = page_obj.page_str(base_url="/tag/{_tid}?".format(_tid=tag_id, ))
+                tag_list = []
                 if current_page == 1:
-                    # tag_objs = Article.select().join(ArticleType).where(ArticleType.article_type == tag_id)[-page_obj.end:]
                     tag_objs = Article.select().where(Article.article_type_id == tag_id)[-page_obj.end:]
                 else:
                     tag_objs = Article.select().where(Article.article_type_id == tag_id)[-page_obj.end:-page_obj.start]
@@ -146,6 +155,8 @@ class TagsHandler(RequestHandler):
                                      'article_type': search_obj.article_type.article_type
                                      })
                 tag_list.reverse()
+                if current_page == 1 and len(tag_list) < per_page_count:
+                    page_html = ""
                 return self.render('index/tag.html', tag_list=tag_list, page_html=page_html)
             except Exception as e:
                 Logger().log(e, True)
@@ -153,7 +164,7 @@ class TagsHandler(RequestHandler):
         self.redirect('/index')
 
 
-class AboutHandler(RequestHandler):
+class AboutHandler(BaseHandler):
     def get(self):
         try:
             blog_obj = Blog.get(Blog.id == 1)
@@ -167,6 +178,6 @@ class AboutHandler(RequestHandler):
         self.render('index/about.html', about_data=about_data)
 
 
-class NotfindHandler(RequestHandler):
+class NotfindHandler(BaseHandler):
     def get(self):
         return self.render('index/404.html')
