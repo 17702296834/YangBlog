@@ -1,5 +1,6 @@
 from tornado.web import RequestHandler
 from models.blog import blog
+from utils.log import Logger
 
 
 class BaseHandler(RequestHandler):
@@ -18,7 +19,11 @@ class BaseHandler(RequestHandler):
     # 当真正调用请求处理方法之前的初始化处理
     def prepare(self):
         # 连接数据库
-        blog.connect()
+        try:
+            blog.connect()
+        except Exception as e:
+            Logger().log(e, True)
+            self.redirect('/500')
 
     # 设置用户cookie认证
     def get_current_user(self):

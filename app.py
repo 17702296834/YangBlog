@@ -50,6 +50,8 @@ application = tornado.web.Application([
     (r"/tag/([\d]+)", index.TagsHandler),
     # 404处理页面
     (r"/404", index.NotfindHandler),
+    # 500处理页面
+    (r"/500", index.ServerErrorHandler),
     (r".*", index.NotfindHandler),
 ], **settings)
 
