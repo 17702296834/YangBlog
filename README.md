@@ -91,6 +91,9 @@ save_status = {'cpu':cpu_status_data,'mem': mem_status_data}
 inster_data(save_status)
 ```
 
+## Demo 地址
+[YangBlog](http://demo.blog.izhihu.me)
+
 ## 效果图
 * index
 ![index](https://github.com/lgphone/YangBlog/blob/master/doc/pic/index.png)
