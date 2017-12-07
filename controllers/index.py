@@ -1,3 +1,4 @@
+from tornado.web import RequestHandler
 from core.request_handler import BaseHandler
 from models.blog import Blog, Article, UserInfo
 from utils.log import Logger
@@ -179,5 +180,10 @@ class AboutHandler(BaseHandler):
 
 
 class NotfindHandler(BaseHandler):
-    def get(self):
+    def get(self, *args, **kwargs):
         return self.render('index/404.html')
+
+
+class ServerErrorHandler(RequestHandler):
+    def get(self, *args, **kwargs):
+        return self.render('index/500.html')

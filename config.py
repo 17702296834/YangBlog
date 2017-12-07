@@ -10,7 +10,3 @@ RUN_LOG_FILE = os.path.join(BASE_DIR, 'logs', 'run.log')
 
 
 # 七牛配置
-ACCESS_KEY = ''
-SECRET_KEY = ''
-BUCKET_NAME = ''
-BASE_STATIC_URL = ''
