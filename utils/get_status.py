@@ -1,7 +1,11 @@
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import *
 from models.blog import ServerStatus
 import datetime
+
 
 # # 设置中文字体
 plt.rcParams['font.sans-serif'] = ['SimHei']
