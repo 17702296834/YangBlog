@@ -12,7 +12,7 @@ class Page:
         return self.current_page * self.per_page_count
     @property
     def total_count(self):
-        v,y = divmod(self.data_count, self.per_page_count)
+        v, y = divmod(self.data_count, self.per_page_count)
         if y:
             v += 1
         return v
@@ -34,20 +34,20 @@ class Page:
         page_count = '<a class="page" href="javascript:void(0);"><button type="button" class="btn btn-default">共 %s 页</button></a>' % (int(self.total_count))
         page_list.append(page_count)
         if self.current_page == 1:
-            prev = '<a class="page" href="javascript:void(0);"><button type="button" class="btn btn-default">上一页</button></a>'
+            prev = '<a class="page" href="javascript:void(0);"><button type="button" class="btn btn-default" disabled>上一页</button></a>'
         else:
-            prev = '<a class="page" href="%sp=%s"><button type="button" class="btn btn-default">上一页</button></a>' %(base_url,self.current_page-1,)
+            prev = '<a class="page" href="%sp=%s&pre=%s"><button type="button" class="btn btn-default">上一页</button></a>' %(base_url, self.current_page-1, int(self.per_page_count))
         page_list.append(prev)
         for i in range(int(start_index), int(end_index)):
             if i == self.current_page:
-                temp = '<a class="page" href="%sp=%s"><button type="button" class="btn btn-success">%s</button></a>'%(base_url,i,i)
+                temp = '<a class="page" href="%sp=%s&pre=%s"><button type="button" class="btn btn-success">%s</button></a>'%(base_url,i,int(self.per_page_count),i)
             else:
-                temp = '<a class="page" href="%sp=%s"><button type="button" class="btn btn-default">%s</button></a>' %(base_url,i,i)
+                temp = '<a class="page" href="%sp=%s&pre=%s"><button type="button" class="btn btn-default">%s</button></a>' %(base_url,i,int(self.per_page_count),i)
             page_list.append(temp)
         if self.current_page == self.total_count:
-            nex = '<a class="page" href="javascript:void(0);"><button type="button" class="btn btn-default">下一页</button></a>'
+            nex = '<a class="page" href="javascript:void(0);"><button type="button" class="btn btn-default" disabled>下一页</button></a>'
         else:
-            nex = '<a class="page" href="%sp=%s"><button type="button" class="btn btn-default">下一页</button></a>' %(base_url,self.current_page+1,)
+            nex = '<a class="page" href="%sp=%s&pre=%s"><button type="button" class="btn btn-default">下一页</button></a>' %(base_url,self.current_page+1, int(self.per_page_count))
         page_list.append(nex)
         jump = """
        <input type='text' style='width:40px;padding: 2px;'/><a style='padding: 5px;' onclick='jumpTo(this, "%s?p=");'><button type="button" class="btn btn-info">GO</button></a>

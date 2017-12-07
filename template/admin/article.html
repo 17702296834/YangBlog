@@ -233,7 +233,7 @@
         console.log(article_data);
         $.ajax({
             type:'POST',
-            url: '/admin/index',
+            url: '/admin/article',
             data: article_data,
             dataType: 'json',
             success: function(arg){

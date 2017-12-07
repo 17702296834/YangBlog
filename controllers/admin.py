@@ -60,13 +60,15 @@ class ArticleHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         current_page = self.get_argument("p", 1)
+        per_page_count = self.get_argument("pre", 15)
         try:
             current_page = int(current_page)
+            per_page_count = int(per_page_count)
         except ValueError as e:
             Logger().log(e, True)
             self.redirect('/admin/index')
         data_count = Article.select().count()
-        page_obj = Page(current_page=current_page, data_count=data_count, per_page_count=15)
+        page_obj = Page(current_page=current_page, data_count=data_count, per_page_count=per_page_count)
         page_html = page_obj.page_str(base_url="/admin/article?")
         at_list = []
         article_types = []
@@ -92,6 +94,8 @@ class ArticleHandler(BaseHandler):
         except Exception as e:
             Logger().log(e, True)
             return self.render('index/500.html')
+        if current_page == 1 and len(at_list) < per_page_count:
+            page_html = ""
         self.render('admin/article.html', at_list=at_list, page_html=page_html, article_types=article_types)
 
     def post(self, *args, **kwargs):
@@ -269,7 +273,6 @@ class ProfileHandler(BaseHandler):
         user_info = {'username': username}
         try:
             user_obj = UserInfo.get(UserInfo.username == username)
-            user_info['password'] = user_obj.password
             user_info['email'] = user_obj.email
             self.render('admin/profile.html', user_info=user_info)
         except Exception as e:
@@ -279,17 +282,23 @@ class ProfileHandler(BaseHandler):
     def post(self, *args, **kwargs):
         ret = {'status': 'false', 'message': '', 'data': ''}
         username = self.get_secure_cookie('username', None)
-        password = self.get_argument('password', None)
+        old_password = self.get_argument('old-password', None)
+        new_password = self.get_argument('new-password', None)
+        print(old_password)
+        print(new_password)
         email = self.get_argument('email', None)
-        if username and password and email:
+        if username and old_password and new_password and email:
             try:
-                user_obj = UserInfo.get(UserInfo.username == username)
-                user_obj.password = password
+                user_obj = UserInfo.get(UserInfo.username == username, UserInfo.password == old_password)
+                user_obj.password = new_password
                 user_obj.email = email
                 user_obj.update_date = datetime.datetime.now()
                 user_obj.save()
                 ret['status'] = 'true'
                 ret['message'] = '用户信息修改成功'
+            except UserInfo.DoesNotExist as e:
+                Logger().log(e, True)
+                ret['message'] = '修改失败,输入旧密码错误!'
             except Exception as e:
                 Logger().log(e, True)
                 ret['message'] = '用户信息修改失败'
