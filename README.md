@@ -1,6 +1,9 @@
 # YangBlog
 * Tornado Blog
 
+## Demo 地址
+[YangBlog](http://demo.blog.izhihu.me)
+
 ## 技术栈
 * 基于 Py3 + Tornado
 * 前端框架 Bootstrap + JQuery
@@ -90,9 +93,6 @@ save_status = {'cpu':cpu_status_data,'mem': mem_status_data}
 #print(save_status)
 inster_data(save_status)
 ```
-
-## Demo 地址
-[YangBlog](http://demo.blog.izhihu.me)
 
 ## 效果图
 * index
