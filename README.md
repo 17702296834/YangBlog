@@ -12,7 +12,7 @@
 * 按钮 Buttons
 * 数据库 Mysql + Peewee
 * 图片存储  QiniuYun 对象存储
-* 画图使用 matplotlib
+* 前端使用 Chart.js 展示图
 
 ## 实现功能
 * /index 首页 文章列表，分页展示
@@ -37,7 +37,7 @@
 * /admin/profile 管理个人资料
 * /admin/blog 管理博客的基本设置
 * /admin/flink 管理友链设置
-* /admin/status 生成状态图片，前端Ajax 定时轮训此地址获取最新图片，目前为1分钟一次
+* /admin/api/v1/status 获取服务器状态，前端Ajax 定时轮训此地址获取最新数据，目前为半分钟一次
 * 先完成这些吧，暂时不会经常更新了
 
 ## 感谢
@@ -47,7 +47,6 @@
 ## 使用模块
 * peewee
 * qiniu
-* matplotlib
 
 ## 部署方法
 * config.py 中填写自己的qiniu对象存储的ACCESS_KEY，SECRET_KEY，BUCKET_NAME，BASE_STATIC_URL
@@ -106,7 +105,7 @@ inster_data(save_status)
 * page
 ![page](https://github.com/lgphone/YangBlog/blob/master/doc/pic/page.png)
 * admin article
-![admin index](https://github.com/lgphone/YangBlog/blob/master/doc/pic/admin_article.png)
+![admin article](https://github.com/lgphone/YangBlog/blob/master/doc/pic/admin_article.png)
 * add article
 ![add article](https://github.com/lgphone/YangBlog/blob/master/doc/pic/article_add.png)
 * del article
