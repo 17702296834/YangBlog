@@ -43,7 +43,7 @@ application = tornado.web.Application([
     # 登出
     (r"/admin/logout", admin.LogoutHandler),
     # 出状态图
-    (r"/admin/status", admin.StatusHandler),
+    (r"/admin/api/v1/status", admin.StatusApiHandler),
     # 上传图片
     (r"/upload", admin.UploadHandler),
     # 文章页

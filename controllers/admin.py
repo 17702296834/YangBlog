@@ -9,7 +9,7 @@ import tornado.web
 
 from config import ACCESS_KEY, SECRET_KEY, BUCKET_NAME, BASE_STATIC_URL
 from core.request_handler import BaseHandler
-from models.blog import Blog, Article, UserInfo, ArticleType, UploadFileInfo, FriendlyLink
+from models.blog import Blog, Article, UserInfo, ArticleType, UploadFileInfo, FriendlyLink, ServerStatus
 from utils import get_status
 from utils.log import Logger
 from utils.pagination import Page
@@ -343,23 +343,50 @@ class BlogHandler(BaseHandler):
         self.write(json.dumps(ret))
 
 
-class StatusHandler(BaseHandler):
+class StatusApiHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
-        monitor_type = self.get_argument('monitor_type', None)
+        ret = {'status': 'false', 'message': '', 'data': ''}
+        monitor_type = self.get_argument('type', None)
         count = self.get_argument('count', 10)
-        stream = io.BytesIO()
+        # print(monitor_type, count)
         if monitor_type == 'cpu':
-            plt = get_status.cpu_status(count)
-            plt.savefig(stream)
-            plt.close()
-            self.write(stream.getvalue())
+            cpu_info = {'date': [], 'load_1': [], 'load_5': [], 'load_15': []}
+            # 数据库中查询大于之前几分钟的数据，就是获取从那个时间点后又创建的数据
+            # old_objs = ServerStatus.select().where(ServerStatus.created_date > get_date).order_by(ServerStatus.created_date.asc())[0:4]
+            # 提取数据库最后的几条数据
+            old_objs = ServerStatus.select().order_by(ServerStatus.created_date.desc())[0:int(count)]
+            for i in old_objs:
+                # print(i.id)
+                # 存在
+                if i.created_date:
+                    # 分钟时间添加进x周
+                    cpu_info['date'].insert(0, datetime.datetime.strftime(i.created_date, '%H:%M'))
+                    # 负载数据添加进y周
+                    cpu_info['load_1'].insert(0, i.cpu_load_1)
+                    cpu_info['load_5'].insert(0, i.cpu_load_5)
+                    cpu_info['load_15'].insert(0, i.cpu_load_15)
+            ret['status'] = 'true'
+            ret['message'] = '获取数据成功'
+            ret['data'] = cpu_info
+            self.write(json.dumps(ret))
         elif monitor_type == 'mem':
-            plt = get_status.mem_status(count)
-            plt.savefig(stream)
-            plt.close()
-            self.write(stream.getvalue())
-
+            mem_info = {'date': [], 'free': []}
+            # 提取数据库最后的几条数据
+            old_objs = ServerStatus.select().order_by(ServerStatus.created_date.desc())[0:int(count)]
+            for i in old_objs:
+                # print(i.id)
+                # 存在
+                if i.created_date:
+                    # 分钟时间添加进x周
+                    mem_info['date'].insert(0, datetime.datetime.strftime(i.created_date, '%H:%M'))
+                    # 负载数据添加进y周
+                    free_m = round(int(i.mem)/1024, 1)
+                    mem_info['free'].insert(0, free_m)
+            ret['status'] = 'true'
+            ret['message'] = '获取数据成功'
+            ret['data'] = mem_info
+            self.write(json.dumps(ret))
 
 class UploadHandler(BaseHandler):
     @tornado.web.authenticated
